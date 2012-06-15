@@ -51,7 +51,8 @@ class AThing(models.Model):
     value = models.CharField(max_length=64)
 
     def __unicode__(self):
-        return "^s::%s" % (kind, value)
+        #WAS: return "^s::%s" % (kind, value)  
+        return "%s::%s" % (self.kind, self.value)  
 
 
 class AGroup(models.Model):
