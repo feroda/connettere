@@ -41,6 +41,23 @@ class Command(BaseCommand):
 
         return rows
 
+    def clean_row_data(self,row):
+        if row["Nome del gruppo"] == '':
+            row["Nome del gruppo"] = "anonimo"  
+        if row["Recapito e-mail"] == '':
+            row["Recapito e-mail"] = "non pervenuto"
+        if row["Sito web"] == '':
+            row["Sito web"] = "non pervenuto"
+        if row["Citta"] == '': 
+            row["Citta"] = "gruppo nazionale"
+        if row["Anno di fondazione"] == '':
+            row["Anno di fondazione"] = "2000"
+        if row["Numero soci o componenti"] == '':
+            row["Numero soci o componenti"] = "0"
+        if row["Numero persone attive"] == '':
+            row["Numero persone attive"] = "0"
+        
+
     def handle(self, *args, **options):
         
         try:
@@ -65,63 +82,64 @@ class Command(BaseCommand):
         values = self.read(csvdata,fieldnames)
         
         for row in values:
-            if row["Nome del gruppo"] != '' and row["Recapito e-mail"] != '' and row["Sito web"] != '' and row["Citta"] != '' and row["Anno di fondazione"] != '' and row["Numero soci o componenti"] != '' and row["Numero persone attive"] != '':
-                group,created = AGroup.objects.get_or_create(name=row["Nome del gruppo"],email=row["Recapito e-mail"],website=row["Sito web"],city=row["Citta"],year=datetime.strptime(''.join([row["Anno di fondazione"],"/01/01","-","00:00:00"]), "%Y/%m/%d-%H:%M:%S"),n_people=row["Numero soci o componenti"],n_hacktivist=row["Numero persone attive"])
-                if created:
-                    if row["[Mailing list] web"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='web', value='mailing-list')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Newsletter] web"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='web',value='NEWSLETTER')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Forum] web"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='web',value='FORUM')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[IRC / Jabber] web"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='web',value='IRC/JABBER')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[identi.ca] web"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='web',value='IDENTI.CA')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Twitter] web"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='web',value='TWITTER')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Facebook] web"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='web',value='FACEBOOK')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Diaspora] web"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='web',value='DIASPORA')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Friendica] web"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='web',value='FRIENDICA')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Google] web"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='web',value='GOOGLE')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Altro] web"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='web',value='ALTRO')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Programmazione] topic"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='topic',value='PROGRAMMAZIONE')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Contenuti Liberi] topic" ].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='topic',value='CONTENUTI LIBERI')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Corsi] topic"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='topic',value='CORSI')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Trashware] topic"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='topic',value='TRASHWARE')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Scuole] topic"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='topic',value='SCUOLE')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Principi del Software Libero] topic"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='topic',value='PRINCIPII DEL SL')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Birra e pizzate] topic"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='topic',value='BIRRA E PIZZATE')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
-                    if row["[Altro] topic"].startswith('S'):
-                        thing,created = AThing.objects.get_or_create(kind='topic',value='ALTRO')
-                        WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+            self.clean_row_data(row)
+            #if row["Nome del gruppo"] != '' and row["Recapito e-mail"] != '' and row["Sito web"] != '' and row["Citta"] != '' and row["Anno di fondazione"] != '' and row["Numero soci o componenti"] != '' and row["Numero persone attive"] != '':
+            group,created = AGroup.objects.get_or_create(name=row["Nome del gruppo"],email=row["Recapito e-mail"],website=row["Sito web"],city=row["Citta"],year=datetime.strptime(''.join([row["Anno di fondazione"],"/01/01","-","00:00:00"]), "%Y/%m/%d-%H:%M:%S"),n_people=row["Numero soci o componenti"],n_hacktivist=row["Numero persone attive"])
+            if created:
+                if row["[Mailing list] web"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='web', value='mailing-list')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Newsletter] web"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='web',value='NEWSLETTER')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Forum] web"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='web',value='FORUM')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[IRC / Jabber] web"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='web',value='IRC/JABBER')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[identi.ca] web"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='web',value='IDENTI.CA')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Twitter] web"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='web',value='TWITTER')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Facebook] web"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='web',value='FACEBOOK')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Diaspora] web"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='web',value='DIASPORA')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Friendica] web"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='web',value='FRIENDICA')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Google] web"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='web',value='GOOGLE')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Altro] web"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='web',value='ALTRO')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Programmazione] topic"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='topic',value='PROGRAMMAZIONE')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Contenuti Liberi] topic" ].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='topic',value='CONTENUTI LIBERI')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Corsi] topic"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='topic',value='CORSI')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Trashware] topic"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='topic',value='TRASHWARE')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Scuole] topic"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='topic',value='SCUOLE')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Principi del Software Libero] topic"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='topic',value='PRINCIPII DEL SL')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Birra e pizzate] topic"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='topic',value='BIRRA E PIZZATE')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)
+                if row["[Altro] topic"].startswith('S'):
+                    thing,created = AThing.objects.get_or_create(kind='topic',value='ALTRO')
+                    WeightedThing.objects.create(agroup=group,athing=thing,weight=1)

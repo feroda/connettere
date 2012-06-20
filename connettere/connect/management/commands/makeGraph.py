@@ -14,7 +14,7 @@ class Command(BaseCommand):
 
     help = """ Make Graphs """ 
 
-
+    
     def makeGraph(self, filename):
         """ rankdir: orientation of the graph
             graph_type: directed, non-directed
@@ -22,12 +22,11 @@ class Command(BaseCommand):
             ranksep: minimum horizontal distance between adjacent nodes of equal rank
     """
         mygraph = pydot.Dot(rankdir='LR',graph_type='digraph',nodesep='1',ranksep='20')
-        #mygraph = pydot.Dot(graph_type='graph')
-        
+                
         thing_nodes = []
         i = 0
         s = '"'
-        hop = 30000
+        hop = 15000
         color = 100000
 
         for thing in AThing.objects.all():
@@ -42,12 +41,15 @@ class Command(BaseCommand):
         for group in AGroup.objects.all():
             #print "\n"
             color += hop
+            even = 0
+             
             group_node = pydot.Node(group.__unicode__().replace("\"",""), style="filled", fillcolor="red")
+            print group.__unicode__().replace("\"","")
             mygraph.add_node(group_node)
-            #print "add group node: %s" % (group_node.get_name())
+            print "add group node: %s" % (group_node.get_name())
             for thing in group.thing_set.all():
                 for thing_node in thing_nodes:
-                    #print s + thing.__unicode__().replace("::"," ") + s
+                    #print "GROUP: %s; %s" % (group.__unicode__(), s + thing.__unicode__().replace("::"," ") + s)
                     #print thing_node.get_name()
                     if (s + thing.__unicode__().replace("::"," ") + s) == thing_node.get_name():
                         #print '#' + str(color)

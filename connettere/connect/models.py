@@ -68,7 +68,8 @@ class AGroup(models.Model):
     thing_set = models.ManyToManyField(AThing, through="WeightedThing")
 
     def __unicode__(self):
-        return self.name
+        #return "%s (%s)" % (self.name,self.city) 
+        return "%s" % (self.name) 
 
 class WeightedThing(models.Model):
 
