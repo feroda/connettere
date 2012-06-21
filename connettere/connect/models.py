@@ -51,7 +51,8 @@ class AThing(models.Model):
     value = models.CharField(max_length=64)
 
     def __unicode__(self):
-        return "^s::%s" % (kind, value)
+        #WAS: return "^s::%s" % (kind, value)  
+        return "%s::%s" % (self.kind, self.value)  
 
 
 class AGroup(models.Model):
@@ -67,7 +68,8 @@ class AGroup(models.Model):
     thing_set = models.ManyToManyField(AThing, through="WeightedThing")
 
     def __unicode__(self):
-        return self.name
+        #return "%s (%s)" % (self.name,self.city) 
+        return "%s" % (self.name) 
 
 class WeightedThing(models.Model):
 
